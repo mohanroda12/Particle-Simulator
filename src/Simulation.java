@@ -10,13 +10,14 @@ public class Simulation {
         ParticleBoxPanel sim = new ParticleBoxPanel(ball);
         ParticleBoxFrame frame = new ParticleBoxFrame(sim);
 
-        double dt = 0.001; //fps = (1 / dt)
+        final double SPEED = 1; // How fast the program runs
+        final double DT = 0.001; // Time between calculations
 
-        Timer timer = new Timer((int)(dt * 1000), new ActionListener() {
+        Timer timer = new Timer((int)(1 / SPEED), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 double forceY = ball.forceDueToGravity(earth);
-                ball.updateParticle(0, forceY, dt);
+                ball.updateParticle(0, forceY, DT * SPEED);
                 //System.out.println(ball.getYPosition());
                 sim.repaint();
             }

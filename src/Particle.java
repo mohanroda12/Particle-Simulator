@@ -51,30 +51,6 @@ public class Particle {
         // Change direction if wall is hit
         velocityX = velocityIfWallHit(velocityX, x, dt);
         velocityY = velocityIfWallHit(velocityY, y, dt);
-
-//        if (y - radius < 0) {
-//            y = radius;
-//            velocityY = -velocityY * dampingFactor;
-//        }
-//        else if (y + radius > 1) {
-//            y = 1 - radius;
-//            velocityY = -velocityY * dampingFactor;
-//        }
-//        else {
-//            y += velocityY * dt;
-//        }
-//
-//        if (x - radius < 0) {
-//            x = radius;
-//            velocityX = -velocityX * dampingFactor;
-//        }
-//        else if (x + radius > 1) {
-//            x = 1 - radius;
-//            velocityX = -velocityX * dampingFactor;
-//        }
-//        else {
-//            x += velocityX * dt;
-//        }
     }
 
     private double calculate1DPosition(double pos, double velocity, double dt) {
@@ -113,5 +89,13 @@ public class Particle {
 
     public double getRadius() {
         return radius;
+    }
+
+    public double getVelocityX() {
+        return velocityX;
+    }
+
+    public double getVelocityY() {
+        return velocityY;
     }
 }
