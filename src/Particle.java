@@ -26,8 +26,23 @@ public class Particle {
         this.updatePosition(time);
     }
 
-    public double forceDueToGravity ( AstronomicalObject planet) {
+    // Returns the gravitational force that is negative (downwards)
+    public double forceDueToGravity(AstronomicalObject planet) {
         return mass * -planet.getSurfaceGravity(); // F = mg;
+    }
+
+    public double frictionalForce(double frictionCoefficient, AstronomicalObject planet) {
+        // If the particle is on the floor, apply friction
+        if (y - radius < 0) {
+            // Apply friction opposing motion
+            if (velocityX > 0) {
+                return -forceDueToGravity(planet) * frictionCoefficient * -1;
+            }
+            else if (velocityX < 0) {
+                return -forceDueToGravity(planet) * frictionCoefficient;
+            }
+        }
+        return 0;
     }
 
     // Uses F = ma to calculate acceleration
@@ -53,19 +68,19 @@ public class Particle {
         velocityY = velocityIfWallHit(velocityY, y, dt);
     }
 
-    private double calculate1DPosition(double pos, double velocity, double dt) {
+    private double calculate1DPosition(double position, double velocity, double dt) {
         // If particles hit any walls (so they don't clip into walls)
-        if (pos - radius < 0) {
-            pos = radius;
+        if (position - radius < 0) {
+            position = radius;
         }
-        else if (pos + radius > 1) {
-            pos = 1 - radius;
+        else if (position + radius > 1) {
+            position = 1 - radius;
         }
         // Update position
         else {
-            pos += velocity * dt;
+            position += velocity * dt;
         }
-        return pos;
+        return position;
     }
 
     private double velocityIfWallHit(double velocity, double pos, double dt) {
@@ -97,5 +112,9 @@ public class Particle {
 
     public double getVelocityY() {
         return velocityY;
+    }
+
+    public double getDampingFactor() {
+        return dampingFactor;
     }
 }
