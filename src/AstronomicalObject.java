@@ -15,7 +15,8 @@ public class AstronomicalObject {
         return (G * mass) / (distanceFromCentre * distanceFromCentre);  // g = Gm / r^2
     }
 
-    public double calcGravitationalForce(double gravity) {
+    public double calcGravitationalForce(double distance) {
+        double gravity = this.calcGravFieldStrength(distance);
         return mass * gravity ; // F = mg
     }
 

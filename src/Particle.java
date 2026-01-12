@@ -7,6 +7,7 @@ public class Particle {
     private double mass; // In kg
     private double radius;
     private double dampingFactor;
+    private double forceX, forceY; // In Newtons
 
     public Particle (double x, double y, double mass, double radius, double dampingFactor) {
         this.x = x;
@@ -14,16 +15,28 @@ public class Particle {
         this.mass = mass;
         this.radius = radius;
         this.dampingFactor = dampingFactor;
-        this.velocityX = 5;
+        this.velocityX = 2;
         this.velocityY = 10;
         this.accelerationX = 0;
         this.accelerationY = 0;
+        this.forceX = 0;
+        this.forceY = 0;
     }
 
     public void updateParticle(double forceX, double forceY, double time) {
-        this.applyForce(forceX, forceY);
+        this.forceY = forceY;
+        this.forceX = forceX;
+        this.applyForce();
         this.calculateVelocity(time);
         this.updatePosition(time);
+    }
+
+    public double calculateForceX(Planet planet) {
+        return this.frictionalForce(this.getDampingFactor(), planet);
+    }
+
+    public double calculateForceY(Planet planet) {
+        return this.forceDueToGravity(planet);
     }
 
     // Returns the gravitational force that is negative (downwards)
@@ -46,7 +59,7 @@ public class Particle {
     }
 
     // Uses F = ma to calculate acceleration
-    public void applyForce(double forceX, double forceY) {
+    public void applyForce() {
         this.accelerationX = forceX / mass;
         this.accelerationY = forceY / mass;
     }
@@ -64,8 +77,7 @@ public class Particle {
         y = calculate1DPosition(y, velocityY, dt);
         x = calculate1DPosition(x, velocityX, dt);
         // Change direction if wall is hit
-        velocityX = velocityIfWallHit(velocityX, x, dt);
-        velocityY = velocityIfWallHit(velocityY, y, dt);
+        calculateCollision(dt);
     }
 
     private double calculate1DPosition(double position, double velocity, double dt) {
@@ -83,7 +95,13 @@ public class Particle {
         return position;
     }
 
+    private void calculateCollision(double dt) {
+        velocityX = velocityIfWallHit(velocityX, x, dt);
+        velocityY = velocityIfWallHit(velocityY, y, dt);
+    }
+
     private double velocityIfWallHit(double velocity, double pos, double dt) {
+        // Reverse velocity if a wall is hit
         if (pos - radius < 0 || pos + radius > 1) {
             return (-velocity * dampingFactor);
         }
