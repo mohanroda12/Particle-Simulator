@@ -22,7 +22,7 @@ public class ParticleBoxPanel extends JPanel {
 
         // Draw particles
         for (Particle particle : particles) {
-            g2.setColor(Color.GREEN);
+            g2.setColor(particle.getColour());
             double radius = particle.getRadius();
 
             g2.fillOval((int) Math.round((particle.getXPosition() - radius) * scaleFactor),

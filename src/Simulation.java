@@ -1,7 +1,7 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Simulation {
 
@@ -28,24 +28,28 @@ public class Simulation {
 
     public void simulate(ParticleBoxPanel simUI) {
         // Simulate every x ms
-        Timer timer = new Timer((int)(1 / SPEED), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                simulateTick(simUI);
-            }
-        });
+        Timer timer = new Timer((int)(1 / SPEED), e -> simulateTick(simUI));
         timer.start();
     }
 
     public static void main(String[] args) {
         // Particles to simulate
         ArrayList<Particle> particles = new ArrayList<>();
-        Particle ball = new Particle(0.5, 0.5, 5, 0.05, 0.5);
-        particles.add(ball);
-        Particle ball2 = new Particle(0.3, 0.6, 2, 0.08, 0.5);
-        particles.add(ball2);
-        Particle ball3 = new Particle(0.5, 0.5, 20, 0.02, 0.5);
-        particles.add(ball3);
+        Random rand = new Random();
+        for (int i = 0; i < 100; i++) {
+            particles.add(new Particle(
+                    Math.random(),
+                    Math.random(),
+                    5, 0.01,
+                    Math.random(),
+                    new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256))));
+        }
+//        Particle ball = new Particle(0.5, 0.5, 5, 0.05, 0.5);
+//        particles.add(ball);
+//        Particle ball2 = new Particle(0.3, 0.6, 2, 0.08, 0.7);
+//        particles.add(ball2);
+//        Particle ball3 = new Particle(0.5, 0.5, 20, 0.02, 0.35);
+//        particles.add(ball3);
 
 
         Planet earth = new Planet("Earth", Planet.EARTH_RADIUS, Planet.EARTH_MASS);

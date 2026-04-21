@@ -1,3 +1,5 @@
+import java.awt.*;
+
 public class Particle {
 
     // Particle properties
@@ -8,19 +10,21 @@ public class Particle {
     private double radius;
     private double dampingFactor;
     private double forceX, forceY; // In Newtons
+    private Color colour;
 
-    public Particle (double x, double y, double mass, double radius, double dampingFactor) {
+    public Particle (double x, double y, double mass, double radius, double dampingFactor, Color colour) {
         this.x = x;
         this.y = y;
         this.mass = mass;
         this.radius = radius;
         this.dampingFactor = dampingFactor;
-        this.velocityX = 2;
-        this.velocityY = 10;
+        this.velocityX = 25;
+        this.velocityY = 50;
         this.accelerationX = 0;
         this.accelerationY = 0;
         this.forceX = 0;
         this.forceY = 0;
+        this.colour = colour;
     }
 
     public void updateParticle(double forceX, double forceY, double time) {
@@ -36,7 +40,7 @@ public class Particle {
     }
 
     public double calculateForceY(Planet planet) {
-        return this.forceDueToGravity(planet);
+        return forceDueToGravity(planet);
     }
 
     // Returns the gravitational force that is negative (downwards)
@@ -134,5 +138,9 @@ public class Particle {
 
     public double getDampingFactor() {
         return dampingFactor;
+    }
+
+    public Color getColour () {
+        return colour;
     }
 }
