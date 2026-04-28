@@ -36,13 +36,16 @@ public class Simulation {
         // Particles to simulate
         ArrayList<Particle> particles = new ArrayList<>();
         Random rand = new Random();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 8; i++) {
             particles.add(new Particle(
                     Math.random(),
                     Math.random(),
-                    5, 0.01,
+                    5,
+                    0.01,
                     Math.random(),
-                    new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256))));
+                    new Color(0, 196, 255),
+                    rand.nextInt(21) - 10,
+                    rand.nextInt(21) - 10));
         }
 //        Particle ball = new Particle(0.5, 0.5, 5, 0.05, 0.5);
 //        particles.add(ball);

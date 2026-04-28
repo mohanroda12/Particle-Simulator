@@ -12,14 +12,14 @@ public class Particle {
     private double forceX, forceY; // In Newtons
     private Color colour;
 
-    public Particle (double x, double y, double mass, double radius, double dampingFactor, Color colour) {
+    public Particle (double x, double y, double mass, double radius, double dampingFactor, Color colour, double velocityX, double velocityY) {
         this.x = x;
         this.y = y;
         this.mass = mass;
         this.radius = radius;
         this.dampingFactor = dampingFactor;
-        this.velocityX = 25;
-        this.velocityY = 50;
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
         this.accelerationX = 0;
         this.accelerationY = 0;
         this.forceX = 0;
@@ -36,7 +36,7 @@ public class Particle {
     }
 
     public double calculateForceX(Planet planet) {
-        return this.frictionalForce(this.getDampingFactor(), planet);
+        return this.frictionalForce(this.getDampingFactor() / 4, planet);
     }
 
     public double calculateForceY(Planet planet) {
@@ -52,6 +52,10 @@ public class Particle {
         // If the particle is on the floor, apply friction
         if (y - radius < 0) {
             // Apply friction opposing motion
+            if(Math.abs(velocityX) < 0.01) {
+                velocityX = 0;
+                return 0;
+            }
             if (velocityX > 0) {
                 return -forceDueToGravity(planet) * frictionCoefficient * -1;
             }
