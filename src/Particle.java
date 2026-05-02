@@ -12,14 +12,14 @@ public class Particle {
     private double forceX, forceY; // In Newtons
     private Color colour;
 
-    public Particle (double x, double y, double mass, double radius, double dampingFactor, Color colour, double velocityX, double velocityY) {
+    public Particle (double x, double y, double mass, double radius, double dampingFactor, Color colour, double initialVelocityX, double initialVelocityY) {
         this.x = x;
         this.y = y;
         this.mass = mass;
         this.radius = radius;
         this.dampingFactor = dampingFactor;
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
+        this.velocityX = initialVelocityX;
+        this.velocityY = initialVelocityY;
         this.accelerationX = 0;
         this.accelerationY = 0;
         this.forceX = 0;
@@ -51,12 +51,12 @@ public class Particle {
     public double frictionalForce(double frictionCoefficient, AstronomicalObject planet) {
         // If the particle is on the floor, apply friction
         if (y - radius < 0) {
-            // Apply friction opposing motion
             if(Math.abs(velocityX) < 0.01) {
                 velocityX = 0;
                 return 0;
             }
-            if (velocityX > 0) {
+            // Apply friction opposing motion
+            else if (velocityX > 0) {
                 return -forceDueToGravity(planet) * frictionCoefficient * -1;
             }
             else if (velocityX < 0) {
@@ -114,6 +114,22 @@ public class Particle {
             return (-velocity * dampingFactor);
         }
         return velocity;
+    }
+
+    public boolean checkCollision(Particle other) {
+        double distanceX = this.getXPosition() - other.getXPosition();
+        double distanceY = this.getYPosition() - other.getYPosition();
+
+        double distance = Math.pow(distanceX, 2) + Math.pow(distanceY, 2);
+
+        // Return true if the particles are overlapping
+        return distance <= this.getRadius() + other.getRadius();
+    }
+
+    public void handleParticleCollision(Particle otherParticle) {
+        if(this.checkCollision(otherParticle)) {
+            // Change particle velocities
+        }
     }
 
     public double getMass() {

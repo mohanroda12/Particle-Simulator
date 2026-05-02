@@ -18,10 +18,14 @@ public class Simulation {
 
     public void simulateTick(ParticleBoxPanel simUI) {
         // Go through to simulate physics of each particle
-        for (Particle particle : particles) {
-            double forceY = particle.calculateForceY(planet);
-            double forceX = particle.calculateForceX(planet);
-            particle.updateParticle(forceX, forceY, DT * SPEED);
+        for (Particle particle1 : particles) {
+            double forceY = particle1.calculateForceY(planet);
+            double forceX = particle1.calculateForceX(planet);
+            particle1.updateParticle(forceX, forceY, DT * SPEED);
+            for (Particle particle2 : particles) {
+                particle1.handleParticleCollision(particle2);
+            }
+
         }
         simUI.repaint();
     }
@@ -43,7 +47,7 @@ public class Simulation {
                     5,
                     0.01,
                     Math.random(),
-                    new Color(0, 196, 255),
+                    new Color(55, 255, 0),
                     rand.nextInt(21) - 10,
                     rand.nextInt(21) - 10));
         }
