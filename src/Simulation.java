@@ -48,8 +48,8 @@ public class Simulation {
                     0.01,
                     Math.random(),
                     new Color(55, 255, 0),
-                    rand.nextInt(21) - 10,
-                    rand.nextInt(21) - 10));
+                    new Vector2D(rand.nextInt(21) - 10, rand.nextInt(21) - 10)
+            ));
         }
 //        Particle ball = new Particle(0.5, 0.5, 5, 0.05, 0.5);
 //        particles.add(ball);

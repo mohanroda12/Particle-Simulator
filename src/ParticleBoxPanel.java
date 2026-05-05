@@ -34,8 +34,8 @@ public class ParticleBoxPanel extends JPanel {
             g2.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 20));
             String xPos = String.format("%.2f", particles.getFirst().getXPosition());
             String yPos = String.format("%.2f", particles.getFirst().getYPosition());
-            String xVelocity = String.format("%.2f", particles.getFirst().getVelocityX());
-            String yVelocity = String.format("%.2f", particles.getFirst().getVelocityY());
+            String xVelocity = String.format("%.2f", particles.getFirst().getVelocity().getX());
+            String yVelocity = String.format("%.2f", particles.getFirst().getVelocity().getY());
             g2.drawString("X: " + xPos, 50, 50);
             g2.drawString("Y: " + yPos, 50, 80);
 
