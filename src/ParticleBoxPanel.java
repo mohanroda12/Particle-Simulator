@@ -25,15 +25,15 @@ public class ParticleBoxPanel extends JPanel {
             g2.setColor(particle.getColour());
             double radius = particle.getRadius();
 
-            g2.fillOval((int) Math.round((particle.getXPosition() - radius) * scaleFactor),
-                    (int) Math.round(getHeight() - ((particle.getYPosition() + radius) * scaleFactor)),
+            g2.fillOval((int) Math.round((particle.getPosition().getX() - radius) * scaleFactor),
+                    (int) Math.round(getHeight() - ((particle.getPosition().getY() + radius) * scaleFactor)),
                     (int) Math.round(radius * scaleFactor * 2),
                     (int) Math.round(radius * scaleFactor * 2));
 
             g2.setColor(Color.BLACK);
             g2.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 20));
-            String xPos = String.format("%.2f", particles.getFirst().getXPosition());
-            String yPos = String.format("%.2f", particles.getFirst().getYPosition());
+            String xPos = String.format("%.2f", particles.getFirst().getPosition().getX());
+            String yPos = String.format("%.2f", particles.getFirst().getPosition().getY());
             String xVelocity = String.format("%.2f", particles.getFirst().getVelocity().getX());
             String yVelocity = String.format("%.2f", particles.getFirst().getVelocity().getY());
             g2.drawString("X: " + xPos, 50, 50);

@@ -18,15 +18,26 @@ public class Simulation {
 
     public void simulateTick(ParticleBoxPanel simUI) {
         // Go through to simulate physics of each particle
-        for (Particle particle1 : particles) {
+        for(int i = 0; i < particles.size(); i++) {
+            Particle particle1 = particles.get(i);
             double forceY = particle1.calculateForceY(planet);
             double forceX = particle1.calculateForceX(planet);
             particle1.updateParticle(forceX, forceY, DT * SPEED);
-            for (Particle particle2 : particles) {
+            // Prevent calculating between two particles twice
+            for(int j = i; j < particles.size(); j++) {
+                Particle particle2 = particles.get(j);
                 particle1.handleParticleCollision(particle2);
             }
-
         }
+//        for (Particle particle1 : particles) {
+//            double forceY = particle1.calculateForceY(planet);
+//            double forceX = particle1.calculateForceX(planet);
+//            particle1.updateParticle(forceX, forceY, DT * SPEED);
+//            for (Particle particle2 : particles) {
+//                particle1.handleParticleCollision(particle2);
+//            }
+//
+//        }
         simUI.repaint();
     }
 
@@ -40,25 +51,16 @@ public class Simulation {
         // Particles to simulate
         ArrayList<Particle> particles = new ArrayList<>();
         Random rand = new Random();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 2; i++) {
             particles.add(new Particle(
-                    Math.random(),
-                    Math.random(),
+                    new Vector2D(Math.random(), Math.random()),
                     5,
-                    0.01,
+                    0.08,
                     Math.random(),
                     new Color(55, 255, 0),
                     new Vector2D(rand.nextInt(21) - 10, rand.nextInt(21) - 10)
             ));
         }
-//        Particle ball = new Particle(0.5, 0.5, 5, 0.05, 0.5);
-//        particles.add(ball);
-//        Particle ball2 = new Particle(0.3, 0.6, 2, 0.08, 0.7);
-//        particles.add(ball2);
-//        Particle ball3 = new Particle(0.5, 0.5, 20, 0.02, 0.35);
-//        particles.add(ball3);
-
-
         Planet earth = new Planet("Earth", Planet.EARTH_RADIUS, Planet.EARTH_MASS);
 
         ParticleBoxPanel simUI = new ParticleBoxPanel(particles);

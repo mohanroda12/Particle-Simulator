@@ -3,7 +3,7 @@ import java.awt.*;
 public class Particle {
 
     // Particle properties
-    private double x,y; // Position in metres above ground/to the right of edge
+    private Vector2D position; // Position in metres above ground/to the right of edge
     private Vector2D velocity; // In m/s
     private double accelerationX, accelerationY; // In m/s^2
     private double mass; // In kg
@@ -12,9 +12,8 @@ public class Particle {
     private double forceX, forceY; // In Newtons
     private Color colour;
 
-    public Particle (double x, double y, double mass, double radius, double dampingFactor, Color colour, Vector2D initialVelocity) {
-        this.x = x;
-        this.y = y;
+    public Particle (Vector2D position, double mass, double radius, double dampingFactor, Color colour, Vector2D initialVelocity) {
+        this.position = position;
         this.mass = mass;
         this.radius = radius;
         this.dampingFactor = dampingFactor;
@@ -49,7 +48,7 @@ public class Particle {
 
     public double frictionalForce(double frictionCoefficient, AstronomicalObject planet) {
         // If the particle is on the floor, apply friction
-        if (y - radius < 0) {
+        if (position.getY() - radius < 0) {
             if(Math.abs(velocity.getX()) < 0.01) {
                 velocity.setX(0);
                 return 0;
@@ -81,8 +80,8 @@ public class Particle {
     // Use speed = distance / time to calculate new position
     public void updatePosition(double dt) {
         // speed * dt = distance travelled
-        y = calculate1DPosition(y, velocity.getY(), dt);
-        x = calculate1DPosition(x, velocity.getX(), dt);
+        position.setY(calculate1DPosition(position.getY(), velocity.getY(), dt));
+        position.setX(calculate1DPosition(position.getX(), velocity.getX(), dt));
         // Change direction if wall is hit
         calculateCollision(dt);
     }
@@ -103,8 +102,8 @@ public class Particle {
     }
 
     private void calculateCollision(double dt) {
-        velocity.setX(velocityIfWallHit(velocity.getX(), x, dt));
-        velocity.setY(velocityIfWallHit(velocity.getY(), y, dt));
+        velocity.setX(velocityIfWallHit(velocity.getX(), position.getX(), dt));
+        velocity.setY(velocityIfWallHit(velocity.getY(), position.getY(), dt));
     }
 
     private double velocityIfWallHit(double velocity, double pos, double dt) {
@@ -117,19 +116,25 @@ public class Particle {
 
     // Distance from two particles centres
     public double particleDistance(Particle otherParticle) {
-        double distanceX = this.getXPosition() - otherParticle.getXPosition();
-        double distanceY = this.getYPosition() - otherParticle.getYPosition();
-        return Math.pow(distanceX, 2) + Math.pow(distanceY, 2);
+        /*
+        FIX, IT IS CAUSING LAG OR GLITCH OR SOMETHING
+         */
+        return Vector2D.subtractVectors(getPosition(), otherParticle.getPosition()).getMagnitude();
     }
 
-    public double velocityDifference(Particle otherParticle) {
-        double dvX = this.getVelocity().getX() - otherParticle.getVelocity().getX();
-        double dvY = this.getVelocity().getY() - otherParticle.getVelocity().getY();
-        return Math.pow(dvX, 2) + Math.pow(dvY, 2);
-    }
+//    public double particleDistance(Particle otherParticle) {
+//        /*
+//        FIX, IT IS CAUSING LAG OR GLITCH OR SOMETHING
+//         */
+//        double xDisance  = getPosition().getX() - otherParticle.getPosition().getX();
+//        double yDisance  = getPosition().getY() - otherParticle.getPosition().getY();
+//        return Math.sqrt(Math.pow(xDisance, 2) + Math.pow(yDisance, 2));
+//    }
 
     public boolean checkCollision(Particle otherParticle) {
+        long start = System.nanoTime();
         double distance = this.particleDistance(otherParticle);
+        System.out.println(System.nanoTime() - start);
 
         // Return true if the particles are overlapping
         return distance <= this.getRadius() + otherParticle.getRadius();
@@ -139,9 +144,36 @@ public class Particle {
         // If a collision occurred
         if(this.checkCollision(otherParticle)) {
             // Change particle velocities
-            double impulseScalar = (dampingFactor + 1) * otherParticle.getMass() / (this.getMass() + otherParticle.getMass());
-            double distance = this.particleDistance(otherParticle);
-            double velocityDiff = this.velocityDifference(otherParticle);
+            Vector2D collisionNormal = Vector2D.subtractVectors(getPosition(), otherParticle.getPosition());
+            Vector2D relativeVelocity = Vector2D.subtractVectors(getVelocity(), otherParticle.getVelocity());
+
+            double averageDF = ((1 - dampingFactor) + (1 - otherParticle.dampingFactor)) * 0.5;
+
+            // Create unit vector
+            collisionNormal.normalise();
+            double relativeNormalVel = Vector2D.dotProduct(relativeVelocity, collisionNormal);
+
+            if(relativeNormalVel <= 0) { // If particles are moving towards each other
+
+                // Project velocities on collision normal
+                double velocity1 = Vector2D.dotProduct(getVelocity(), collisionNormal);
+                double velocity2 = Vector2D.dotProduct(otherParticle.getVelocity(), collisionNormal);
+
+                // Calculate collision projection
+                double massSum = mass + otherParticle.mass;
+                double numerator1 = ((mass - averageDF * otherParticle.mass) * velocity1) + ((averageDF + 1) * otherParticle.mass * velocity2);
+                double finalVel1 = numerator1 / massSum;
+
+                double numerator2 = ((otherParticle.mass - averageDF * mass) * velocity2) + ((averageDF + 1) * mass * velocity1);
+                double finalVel2 = numerator2 / massSum;
+
+                // Project to 2D
+                Vector2D impulseThis = Vector2D.multiplyVector(collisionNormal, finalVel1 - velocity1);
+                velocity.addVector(impulseThis);
+
+                Vector2D impulseOther = Vector2D.multiplyVector(collisionNormal, finalVel2 - velocity2);
+                otherParticle.velocity.addVector(impulseOther);
+            }
         }
     }
 
@@ -149,25 +181,13 @@ public class Particle {
         return mass;
     }
 
-    public double getXPosition() {
-        return x;
-    }
-
-    public double getYPosition() {
-        return y;
+    public Vector2D getPosition() {
+        return position;
     }
 
     public double getRadius() {
         return radius;
     }
-
-//    public double getVelocityX() {
-//        return velocity.getX();
-//    }
-//
-//    public double getVelocityY() {
-//        return velocity.getY();
-//    }
 
     public Vector2D getVelocity() {
         return velocity;
